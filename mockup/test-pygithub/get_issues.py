@@ -12,4 +12,4 @@ closed_issues = user.get_issues(state="closed", since=today)
 print('daily closed issues:', closed_issues.totalCount)
 
 for issue in closed_issues:
-    print(issue.number, issue.title)
+    print('[%s](%s) %s' % (issue.number, issue.html_url, issue.title))
