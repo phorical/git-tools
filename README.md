@@ -1,2 +1,2 @@
-# daily-activity-on-github
-The script that helps you to generate the report of your daily activity on GitHub.
+# github-tools
+Some CLI tools that help you automate routine operations with git.
