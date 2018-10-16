@@ -1,5 +1,20 @@
+import argparse
+
 from datetime import date, datetime
 from github import Github, BadCredentialsException
+
+parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
+                                 epilog="Find more information at https://github.com/digitalduke/github-tools")
+
+parser.add_argument('--date',
+                    action='store',
+                    default='today',
+                    metavar="YYYY-MM-DD",
+                    type=str,
+                    help='date in ISO 8601 format, for example: 2018-10-16. Default is today.')
+
+args = parser.parse_args()
+# print(args)
 
 ACCESS_TOKEN = ""
 REPO_NAME = "a-iv/100maketov"
