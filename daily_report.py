@@ -30,8 +30,7 @@ try:
     commits = repo.get_commits(since=today, author=user)
     print("List of daily commits in repo \"%s\" in PR which already closed" % REPO_NAME)
     for commit in commits:
-        if not commit.commit.message.startswith("Merge"):
-            print(commit.sha[:7], commit.html_url, commit.commit.message)
+        print(commit.sha[:7], commit.html_url, commit.commit.message)
     print()
 except (Exception, BadCredentialsException) as error:
     print("Can't get list of commits in PR which already closed.")
