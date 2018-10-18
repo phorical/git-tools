@@ -17,3 +17,12 @@
     <img alt="Best distro ever" src="https://img.shields.io/badge/platform-linux-yellow.svg?style=flat-square">
   </a>
 </p>
+
+#### Install
+
+#### Config
+
+#### Use
+
+#### Contribute
+Contributions are welcome. If you find an issue and you consider contributing, you can use the [Github issues tracker] (https://github.com/digitalduke/github-tools/issues) in order to report it, or better yet, open a pull request. Feature request also welcome.
