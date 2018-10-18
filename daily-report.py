@@ -1,6 +1,7 @@
 import argparse
 
-from datetime import date, datetime
+from dateutil.parser import parse
+from datetime import date, datetime, timedelta
 from github import Github, BadCredentialsException
 
 parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
@@ -11,14 +12,20 @@ parser.add_argument('--date',
                     default='today',
                     metavar="YYYY-MM-DD",
                     type=str,
-                    help='date in ISO 8601 format, for example: 2018-10-16. Default is today.')
+                    help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.')
 
 args = parser.parse_args()
 
+if args.date == 'today':
+    date_since = datetime.combine(date.today(), datetime.min.time())
+    date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+else:
+    date_since = parse(args.date)
+    date_since = datetime.combine(date_since, datetime.min.time())
+    date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+
 ACCESS_TOKEN = ""
 REPO_NAME = "a-iv/100maketov"
-
-today = datetime.combine(date.today(), datetime.min.time())
 
 github = Github(ACCESS_TOKEN)
 user = github.get_user()
@@ -30,17 +37,18 @@ except (Exception, BadCredentialsException) as error:
 
 
 try:
-    closed_issues = user.get_issues(state="closed", since=today)
+    closed_issues = user.get_issues(state="closed", since=date_since)
     print("List of daily closed issues")
     for issue in closed_issues:
-        print(issue.number, issue.html_url, issue.title)
+        if date_since <= issue.closed_at <= date_until:
+            print(issue.number, issue.html_url, issue.title)
     print()
 except (Exception, BadCredentialsException) as error:
     print("Can't get list of closed issues.")
 
 
 try:
-    commits = repo.get_commits(since=today, author=user)
+    commits = repo.get_commits(since=date_since, author=user)
     print("List of daily commits in repo \"%s\" in PR which already closed" % REPO_NAME)
     for commit in commits:
         print(commit.sha[:7], commit.html_url, commit.commit.message)
@@ -63,9 +71,7 @@ try:
             if not commit.committer.login == user.login:
                 continue
 
-            if commit.commit.author.date.year == today.year and \
-                    commit.commit.author.date.month == today.month and \
-                    commit.commit.author.date.day == today.day:
+            if date_since <= commit.commit.author.date <= date_until:
                 if print_pr_number:
                     print("PR#%s %s %s" % (pr.number, pr.html_url, pr.title))
                     print_pr_number = False
