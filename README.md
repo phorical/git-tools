@@ -25,4 +25,4 @@
 #### Use
 
 #### Contribute
-Contributions are welcome. If you find an issue and you consider contributing, you can use the [Github issues tracker] (https://github.com/digitalduke/github-tools/issues) in order to report it, or better yet, open a pull request. Feature request also welcome.
+Contributions are welcome. If you find an issue and you consider contributing, you can use the [Github issues tracker](https://github.com/digitalduke/github-tools/issues) in order to report it, or better yet, open a pull request. Feature request also welcome.
