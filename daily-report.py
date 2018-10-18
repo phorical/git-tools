@@ -14,7 +14,6 @@ parser.add_argument('--date',
                     help='date in ISO 8601 format, for example: 2018-10-16. Default is today.')
 
 args = parser.parse_args()
-# print(args)
 
 ACCESS_TOKEN = ""
 REPO_NAME = "a-iv/100maketov"
@@ -23,7 +22,6 @@ today = datetime.combine(date.today(), datetime.min.time())
 
 github = Github(ACCESS_TOKEN)
 user = github.get_user()
-
 
 try:
     repo = github.get_repo(REPO_NAME)
@@ -62,7 +60,7 @@ try:
 
         for commit in commits:
 
-            if not commit.commit.author.name == user.name:
+            if not commit.committer.login == user.login:
                 continue
 
             if commit.commit.author.date.year == today.year and \
