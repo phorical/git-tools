@@ -3,7 +3,7 @@
 </h1>
 
 <h4 align="center">
-  Some CLI tools that help you automate routine operations with git.
+  CLI tools that help you to automate some routine operations with git
 </h4>
 
 <p align="center">
