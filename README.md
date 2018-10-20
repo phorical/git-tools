@@ -25,4 +25,15 @@
 #### Use
 
 #### Contribute
-Contributions are welcome. If you find an issue and you consider contributing, you can use the [Github issues tracker](https://github.com/digitalduke/github-tools/issues) in order to report it, or better yet, open a pull request. Feature request also welcome.
+Contributions are welcome. If you find any bugs, please open [a new issue](https://github.com/digitalduke/github-tools/issues/new/choose) in order to report it. Feature request also welcome.
+
+If you consider to contribute, you are awesome! Just follow this steps:
+
+1. Fork this project!
+1. Make a local clone: ```git clone https://github.com/{YOUR_USERNAME}/github-tools.git```
+1. Switch to the directory and create a new feature branch: ```cd github-tools && git checkout -b <new-branch>```
+1. Make changes to the source code
+1. Add changes to git: ```git add --all``` and commit changes: ```git commit -m "Your commit message"``` 
+1. Push your commits: ```git push```
+1. Submit a new [pull request](https://github.com/digitalduke/github-tools/pulls)
+1. You rock :thumbsup:
