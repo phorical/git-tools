@@ -69,16 +69,15 @@ def save_config(configuration):
         config.write(config_file)
 
 
-ACCESS_TOKEN = ""
-REPO_NAME = "a-iv/100maketov"
+load_config(CONFIGURATION)
 
-github = Github(ACCESS_TOKEN)
+github = Github(CONFIGURATION['token'])
 user = github.get_user()
 
 try:
-    repo = github.get_repo(REPO_NAME)
+    repo = github.get_repo(CONFIGURATION['repository'])
 except (Exception, BadCredentialsException) as error:
-    print("Can't get repo %s" % REPO_NAME)
+    print("Can't get repo %s" % CONFIGURATION['repository'])
 
 
 try:
@@ -94,7 +93,7 @@ except (Exception, BadCredentialsException) as error:
 
 try:
     commits = repo.get_commits(since=date_since, author=user)
-    print("List of daily commits in repo \"%s\" in PR which already closed" % REPO_NAME)
+    print("List of daily commits in repo \"%s\" in PR which already closed" % CONFIGURATION['repository'])
     for commit in commits:
         print(commit.sha[:7], commit.html_url, commit.commit.message)
     print()
@@ -105,7 +104,7 @@ except (Exception, BadCredentialsException) as error:
 try:
     pulls = repo.get_pulls(state="open", base="master")
     if pulls:
-        print("List of daily commits in repo \"%s\" in PR which don't closed" % REPO_NAME)
+        print("List of daily commits in repo \"%s\" in PR which don't closed" % CONFIGURATION['repository'])
 
     for pr in pulls:
         commits = pr.get_commits()
