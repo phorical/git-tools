@@ -1,8 +1,17 @@
+import os
 import argparse
+import configparser
 
 from dateutil.parser import parse
 from datetime import date, datetime, timedelta
 from github import Github, BadCredentialsException
+
+
+SCRIPT_FOLDER = 'daily-report'
+CONFIGURATION = {
+    'token': '',
+    'repository': '',
+}
 
 parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
                                  epilog="Find more information at https://github.com/digitalduke/github-tools")
@@ -24,16 +33,51 @@ else:
     date_since = datetime.combine(date_since, datetime.min.time())
     date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
-ACCESS_TOKEN = ""
-REPO_NAME = "a-iv/100maketov"
 
-github = Github(ACCESS_TOKEN)
+def get_config_path():
+    xdg_config_home_dir = os.environ.get('XDG_CONFIG_HOME', '')
+    home_dir = os.environ.get('HOME', '')
+    path = ""
+    if xdg_config_home_dir:
+        path = os.path.join(xdg_config_home_dir, SCRIPT_FOLDER)
+    elif home_dir:
+        path = os.path.join(home_dir, '.config', SCRIPT_FOLDER)
+    return path
+
+
+def get_config_file_full_path():
+    return os.path.join(get_config_path(), 'daily-report.conf')
+
+
+def load_config(configuration):
+    config = configparser.ConfigParser()
+    config.read(get_config_file_full_path())
+
+    if 'Default' in config.sections():
+        for option in config.options('Default'):
+            configuration[option] = config.get('Default', option)
+
+
+def save_config(configuration):
+    config = configparser.ConfigParser()
+    config['Default'] = configuration
+
+    if not os.path.exists(get_config_path()):
+        os.makedirs(get_config_path())
+
+    with open(get_config_file_full_path(), 'w') as config_file:
+        config.write(config_file)
+
+
+load_config(CONFIGURATION)
+
+github = Github(CONFIGURATION['token'])
 user = github.get_user()
 
 try:
-    repo = github.get_repo(REPO_NAME)
+    repo = github.get_repo(CONFIGURATION['repository'])
 except (Exception, BadCredentialsException) as error:
-    print("Can't get repo %s" % REPO_NAME)
+    print("Can't get repo %s" % CONFIGURATION['repository'])
 
 
 try:
@@ -49,7 +93,7 @@ except (Exception, BadCredentialsException) as error:
 
 try:
     commits = repo.get_commits(since=date_since, author=user)
-    print("List of daily commits in repo \"%s\" in PR which already closed" % REPO_NAME)
+    print("List of daily commits in repo \"%s\" in PR which already closed" % CONFIGURATION['repository'])
     for commit in commits:
         print(commit.sha[:7], commit.html_url, commit.commit.message)
     print()
@@ -60,7 +104,7 @@ except (Exception, BadCredentialsException) as error:
 try:
     pulls = repo.get_pulls(state="open", base="master")
     if pulls:
-        print("List of daily commits in repo \"%s\" in PR which don't closed" % REPO_NAME)
+        print("List of daily commits in repo \"%s\" in PR which don't closed" % CONFIGURATION['repository'])
 
     for pr in pulls:
         commits = pr.get_commits()
