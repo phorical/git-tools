@@ -1,5 +1,6 @@
 import os
 import argparse
+import configparser
 
 from dateutil.parser import parse
 from datetime import date, datetime, timedelta
@@ -7,6 +8,10 @@ from github import Github, BadCredentialsException
 
 
 SCRIPT_FOLDER = 'daily-report'
+CONFIGURATION = {
+    'token': '',
+    'repository': '',
+}
 
 parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
                                  epilog="Find more information at https://github.com/digitalduke/github-tools")
@@ -42,6 +47,26 @@ def get_config_path():
 
 def get_config_file_full_path():
     return os.path.join(get_config_path(), 'daily-report.conf')
+
+
+def load_config(configuration):
+    config = configparser.ConfigParser()
+    config.read(get_config_file_full_path())
+
+    if 'Default' in config.sections():
+        for option in config.options('Default'):
+            configuration[option] = config.get('Default', option)
+
+
+def save_config(configuration):
+    config = configparser.ConfigParser()
+    config['Default'] = configuration
+
+    if not os.path.exists(get_config_path()):
+        os.makedirs(get_config_path())
+
+    with open(get_config_file_full_path(), 'w') as config_file:
+        config.write(config_file)
 
 
 ACCESS_TOKEN = ""
