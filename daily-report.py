@@ -1,8 +1,12 @@
+import os
 import argparse
 
 from dateutil.parser import parse
 from datetime import date, datetime, timedelta
 from github import Github, BadCredentialsException
+
+
+SCRIPT_FOLDER = 'daily-report'
 
 parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
                                  epilog="Find more information at https://github.com/digitalduke/github-tools")
@@ -23,6 +27,22 @@ else:
     date_since = parse(args.date)
     date_since = datetime.combine(date_since, datetime.min.time())
     date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+
+
+def get_config_path():
+    xdg_config_home_dir = os.environ.get('XDG_CONFIG_HOME', '')
+    home_dir = os.environ.get('HOME', '')
+    path = ""
+    if xdg_config_home_dir:
+        path = os.path.join(xdg_config_home_dir, SCRIPT_FOLDER)
+    elif home_dir:
+        path = os.path.join(home_dir, '.config', SCRIPT_FOLDER)
+    return path
+
+
+def get_config_file_full_path():
+    return os.path.join(get_config_path(), 'daily-report.conf')
+
 
 ACCESS_TOKEN = ""
 REPO_NAME = "a-iv/100maketov"
