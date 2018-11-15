@@ -15,23 +15,12 @@ CONFIGURATION = {
 
 parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
                                  epilog="Find more information at https://github.com/digitalduke/github-tools")
-
 parser.add_argument('--date',
                     action='store',
                     default='today',
                     metavar="YYYY-MM-DD",
                     type=str,
                     help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.')
-
-args = parser.parse_args()
-
-if args.date == 'today':
-    date_since = datetime.combine(date.today(), datetime.min.time())
-    date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
-else:
-    date_since = parse(args.date)
-    date_since = datetime.combine(date_since, datetime.min.time())
-    date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
 
 def get_config_path():
@@ -69,61 +58,71 @@ def save_config(configuration):
         config.write(config_file)
 
 
-load_config(CONFIGURATION)
+def run():
+    args = parser.parse_args()
+    if args.date == 'today':
+        date_since = datetime.combine(date.today(), datetime.min.time())
+        date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+    else:
+        date_since = parse(args.date)
+        date_since = datetime.combine(date_since, datetime.min.time())
+        date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
-github = Github(CONFIGURATION['token'])
-user = github.get_user()
+    load_config(CONFIGURATION)
 
-try:
-    repo = github.get_repo(CONFIGURATION['repository'])
-except (Exception, BadCredentialsException) as error:
-    print("Can't get repo %s" % CONFIGURATION['repository'])
+    github = Github(CONFIGURATION['token'])
+    user = github.get_user()
 
+    try:
+        repo = github.get_repo(CONFIGURATION['repository'])
+    except (Exception, BadCredentialsException) as error:
+        print("Can't get repo %s" % CONFIGURATION['repository'])
 
-try:
-    closed_issues = user.get_issues(state="closed", since=date_since)
-    print("List of daily closed issues")
-    for issue in closed_issues:
-        if date_since <= issue.closed_at <= date_until:
-            print(issue.number, issue.html_url, issue.title)
-    print()
-except (Exception, BadCredentialsException) as error:
-    print("Can't get list of closed issues.")
+    try:
+        closed_issues = user.get_issues(state="closed", since=date_since)
+        print("List of daily closed issues")
+        for issue in closed_issues:
+            if date_since <= issue.closed_at <= date_until:
+                print(issue.number, issue.html_url, issue.title)
+        print()
+    except (Exception, BadCredentialsException) as error:
+        print("Can't get list of closed issues.")
 
-
-try:
-    commits = repo.get_commits(since=date_since, author=user)
-    print("List of daily commits in repo \"%s\" in PR which already closed" % CONFIGURATION['repository'])
-    for commit in commits:
-        print(commit.sha[:7], commit.html_url, commit.commit.message)
-    print()
-except (Exception, BadCredentialsException) as error:
-    print("Can't get list of commits in PR which already closed.")
-
-
-try:
-    pulls = repo.get_pulls(state="open", base="master")
-    if pulls:
-        print("List of daily commits in repo \"%s\" in PR which don't closed" % CONFIGURATION['repository'])
-
-    for pr in pulls:
-        commits = pr.get_commits()
-        print_pr_number = True
-
+    try:
+        commits = repo.get_commits(since=date_since, author=user)
+        print("List of daily commits in repo \"%s\" in PR which already closed" % CONFIGURATION['repository'])
         for commit in commits:
+            print(commit.sha[:7], commit.html_url, commit.commit.message)
+        print()
+    except (Exception, BadCredentialsException) as error:
+        print("Can't get list of commits in PR which already closed.")
 
-            if not commit.committer.login == user.login:
-                continue
+    try:
+        pulls = repo.get_pulls(state="open", base="master")
+        if pulls:
+            print("List of daily commits in repo \"%s\" in PR which don't closed" % CONFIGURATION['repository'])
 
-            if date_since <= commit.commit.author.date <= date_until:
-                if print_pr_number:
-                    print("PR#%s %s %s" % (pr.number, pr.html_url, pr.title))
-                    print_pr_number = False
+        for pr in pulls:
+            commits = pr.get_commits()
+            print_pr_number = True
 
-                print(commit.sha[:7], commit.html_url, commit.commit.message)
+            for commit in commits:
 
-except (Exception, BadCredentialsException) as error:
-    print("Can't get list of commits in opened PR.")
+                if not commit.committer.login == user.login:
+                    continue
+
+                if date_since <= commit.commit.author.date <= date_until:
+                    if print_pr_number:
+                        print("PR#%s %s %s" % (pr.number, pr.html_url, pr.title))
+                        print_pr_number = False
+
+                    print(commit.sha[:7], commit.html_url, commit.commit.message)
+
+    except (Exception, BadCredentialsException) as error:
+        print("Can't get list of commits in opened PR.")
+
+    print("\r\nDone.")
 
 
-print("\r\nDone.")
+if __name__ == "__main__":
+    run()
