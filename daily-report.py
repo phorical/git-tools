@@ -23,6 +23,7 @@ parser.add_argument(
     default='today',
     metavar="YYYY-MM-DD",
     type=str,
+    dest='date',
     help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.'
 )
 
