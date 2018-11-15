@@ -64,13 +64,13 @@ def save_config(configuration):
 
 def run():
     args = parser.parse_args()
+
     if args.date == 'today':
-        date_since = datetime.combine(date.today(), datetime.min.time())
-        date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+        date_since = date.today()
     else:
         date_since = parse(args.date)
-        date_since = datetime.combine(date_since, datetime.min.time())
-        date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
+    date_since = datetime.combine(date_since, datetime.min.time())
+    date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
     load_config(CONFIGURATION)
 
