@@ -13,14 +13,18 @@ CONFIGURATION = {
     'repository': '',
 }
 
-parser = argparse.ArgumentParser(description="Show daily activity on GitHub and (optional) send via e-mail.",
-                                 epilog="Find more information at https://github.com/digitalduke/github-tools")
-parser.add_argument('--date',
-                    action='store',
-                    default='today',
-                    metavar="YYYY-MM-DD",
-                    type=str,
-                    help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.')
+parser = argparse.ArgumentParser(
+    description="Show daily activity on GitHub and (optional) send via e-mail.",
+    epilog="Find more information at https://github.com/digitalduke/github-tools"
+)
+parser.add_argument(
+    '--date',
+    action='store',
+    default='today',
+    metavar="YYYY-MM-DD",
+    type=str,
+    help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.'
+)
 
 
 def get_config_path():
