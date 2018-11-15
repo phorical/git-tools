@@ -14,7 +14,7 @@ CONFIGURATION = {
 }
 
 parser = argparse.ArgumentParser(
-    description="Show daily activity on GitHub and (optional) send via e-mail.",
+    description="Show daily activity on GitHub and (optionally) send it via e-mail.",
     epilog="Find more information at https://github.com/digitalduke/github-tools"
 )
 parser.add_argument(
