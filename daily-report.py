@@ -32,6 +32,15 @@ parser.add_argument(
     dest='token',
     help='Save GitHub API access tokens into configuration file.'
 )
+parser.add_argument(
+    '--store-repository',
+    action='store',
+    default=None,
+    metavar="REPOSITORY",
+    type=str,
+    dest='store_repository',
+    help='Save repository name into configuration file.'
+)
 
 
 def get_config_path():
@@ -74,6 +83,11 @@ def run():
         options.update(token=args.token)
         save_options(options)
         print("Token successfully stored in config file.")
+
+    if args.store_repository:
+        options.update(repository=args.store_repository)
+        save_options(options)
+        print("Repository name successfully stored in config file.")
 
     if args.date == 'today':
         date_since = date.today()
