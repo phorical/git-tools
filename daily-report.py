@@ -51,8 +51,7 @@ def get_options():
 
 
 def save_options(options):
-    if not os.path.exists(get_config_path()):
-        os.makedirs(get_config_path())
+    os.makedirs(get_config_path(), exist_ok=True)
 
     with open(get_config_file_full_path(), 'w') as config_file:
         json.dump(options, config_file)
