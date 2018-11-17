@@ -1,6 +1,6 @@
 import os
+import json
 import argparse
-import configparser
 
 from dateutil.parser import parse
 from datetime import date, datetime, timedelta
@@ -9,10 +9,6 @@ from github import Github, BadCredentialsException
 
 SCRIPT_FOLDER = 'daily-report'
 CONFIG_FILENAME = 'daily-report.json'
-CONFIGURATION = {
-    'token': '',
-    'repository': '',
-}
 
 parser = argparse.ArgumentParser(
     description="Show daily activity on GitHub and (optionally) send it via e-mail.",
@@ -43,24 +39,23 @@ def get_config_path():
 def get_config_file_full_path():
     return os.path.join(get_config_path(), CONFIG_FILENAME)
 
-def load_config(configuration):
-    config = configparser.ConfigParser()
-    config.read(get_config_file_full_path())
 
-    if 'Default' in config.sections():
-        for option in config.options('Default'):
-            configuration[option] = config.get('Default', option)
+def get_options():
+    options = {}
+    try:
+        with open(get_config_file_full_path()) as config_file:
+            options = json.load(config_file)
+    except FileNotFoundError:
+        print("Error while reading options: file does not exist.")
+    return options
 
 
-def save_config(configuration):
-    config = configparser.ConfigParser()
-    config['Default'] = configuration
-
+def save_options(options):
     if not os.path.exists(get_config_path()):
         os.makedirs(get_config_path())
 
     with open(get_config_file_full_path(), 'w') as config_file:
-        config.write(config_file)
+        json.dump(options, config_file)
 
 
 def run():
@@ -73,15 +68,15 @@ def run():
     date_since = datetime.combine(date_since, datetime.min.time())
     date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
-    load_config(CONFIGURATION)
+    options = get_options()
 
-    github = Github(CONFIGURATION['token'])
+    github = Github(options.get('token', ''))
     user = github.get_user()
 
     try:
-        repo = github.get_repo(CONFIGURATION['repository'])
+        repo = github.get_repo(options.get('repository', ''))
     except (Exception, BadCredentialsException) as error:
-        print("Can't get repo %s" % CONFIGURATION['repository'])
+        print("Can't get repo %s" % options.get('repository', ''))
 
     try:
         closed_issues = user.get_issues(state="closed", since=date_since)
@@ -95,7 +90,7 @@ def run():
 
     try:
         commits = repo.get_commits(since=date_since, author=user)
-        print("List of daily commits in repo \"%s\" in PR which already closed" % CONFIGURATION['repository'])
+        print("List of daily commits in repo \"%s\" in PR which already closed" % options.get('repository', ''))
         for commit in commits:
             print(commit.sha[:7], commit.html_url, commit.commit.message)
         print()
@@ -105,7 +100,7 @@ def run():
     try:
         pulls = repo.get_pulls(state="open", base="master")
         if pulls:
-            print("List of daily commits in repo \"%s\" in PR which don't closed" % CONFIGURATION['repository'])
+            print("List of daily commits in repo \"%s\" in PR which don't closed" % options.get('repository', ''))
 
         for pr in pulls:
             commits = pr.get_commits()
