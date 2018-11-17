@@ -8,6 +8,7 @@ from github import Github, BadCredentialsException
 
 
 SCRIPT_FOLDER = 'daily-report'
+CONFIG_FILENAME = 'daily-report.json'
 CONFIGURATION = {
     'token': '',
     'repository': '',
@@ -40,8 +41,7 @@ def get_config_path():
 
 
 def get_config_file_full_path():
-    return os.path.join(get_config_path(), 'daily-report.conf')
-
+    return os.path.join(get_config_path(), CONFIG_FILENAME)
 
 def load_config(configuration):
     config = configparser.ConfigParser()
