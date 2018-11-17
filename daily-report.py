@@ -23,6 +23,15 @@ parser.add_argument(
     dest='date',
     help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.'
 )
+parser.add_argument(
+    '--store-token',
+    action='store',
+    default=None,
+    metavar="TOKEN",
+    type=str,
+    dest='token',
+    help='Save GitHub API access tokens into configuration file.'
+)
 
 
 def get_config_path():
@@ -59,6 +68,12 @@ def save_options(options):
 
 def run():
     args = parser.parse_args()
+    options = get_options()
+
+    if args.token:
+        options.update(token=args.token)
+        save_options(options)
+        print("Token successfully stored in config file.")
 
     if args.date == 'today':
         date_since = date.today()
@@ -66,8 +81,6 @@ def run():
         date_since = parse(args.date)
     date_since = datetime.combine(date_since, datetime.min.time())
     date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
-
-    options = get_options()
 
     github = Github(options.get('token', ''))
     user = github.get_user()
