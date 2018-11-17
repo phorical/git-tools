@@ -7,7 +7,7 @@ from datetime import date, datetime, timedelta
 from github import Github, BadCredentialsException
 
 
-SCRIPT_FOLDER = 'daily-report'
+SCRIPT_FOLDER = 'git-tools'
 CONFIG_FILENAME = 'daily-report.json'
 
 parser = argparse.ArgumentParser(
