@@ -1,5 +1,5 @@
 <h1 align="center">
-  github-tools
+  git-tools
 </h1>
 
 <h4 align="center">
@@ -7,7 +7,7 @@
 </h4>
 
 <p align="center">
-  <a href="https://github.com/digitalduke/github-tools/blob/master/LICENSE">
+  <a href="https://github.com/digitalduke/git-tools/blob/master/LICENSE">
     <img alt="License MIT" src="https://img.shields.io/github/license/mashape/apistatus.svg?style=flat-square">
   </a>
   <a href="https://www.python.org/">
@@ -25,15 +25,15 @@
 #### Use
 
 #### Contribute
-Contributions are welcome. If you find any bugs, please open [a new issue](https://github.com/digitalduke/github-tools/issues/new/choose) in order to report it. Feature request also welcome.
+Contributions are welcome. If you find any bugs, please open [a new issue](https://github.com/digitalduke/git-tools/issues/new/choose) in order to report it. Feature request also welcome.
 
 If you consider to contribute, you are awesome! Just follow this steps:
 
 1. Fork this project!
-1. Make a local clone: ```git clone https://github.com/{YOUR_USERNAME}/github-tools.git```
-1. Switch to the directory and create a new feature branch: ```cd github-tools && git checkout -b <new-branch>```
+1. Make a local clone: ```git clone https://github.com/{YOUR_USERNAME}/git-tools.git```
+1. Switch to the directory and create a new feature branch: ```cd git-tools && git checkout -b <new-branch>```
 1. Make changes to the source code
 1. Add changes to git: ```git add --all``` and commit changes: ```git commit -m "Your commit message"``` 
 1. Push your commits: ```git push```
-1. Submit a new [pull request](https://github.com/digitalduke/github-tools/pulls)
+1. Submit a new [pull request](https://github.com/digitalduke/git-tools/pulls)
 1. You rock :thumbsup:
