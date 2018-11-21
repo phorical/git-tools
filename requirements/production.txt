@@ -1,2 +1,0 @@
-pygithub >=1.43.2
-python-dateutil >=2.7.3
