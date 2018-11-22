@@ -26,7 +26,7 @@ parser.add_argument(
     metavar="YYYY-MM-DD",
     type=str,
     dest='date',
-    help='Date in ISO 8601 format, for example: 2018-10-16. Default is today.'
+    help='date in ISO 8601 format, for example, 2018-10-16, or today if omitted'
 )
 parser.add_argument(
     '--store-token',
@@ -35,7 +35,7 @@ parser.add_argument(
     metavar="TOKEN",
     type=str,
     dest='token',
-    help='Save GitHub API access tokens into configuration file.'
+    help='save GitHub access token into configuration file'
 )
 parser.add_argument(
     '--store-repository',
@@ -44,7 +44,7 @@ parser.add_argument(
     metavar="REPOSITORY",
     type=str,
     dest='store_repository',
-    help='Save repository name into configuration file.'
+    help='save repository name into configuration file'
 )
 
 
