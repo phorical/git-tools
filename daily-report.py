@@ -12,7 +12,7 @@ CONFIG_FILENAME = 'daily-report.json'
 
 parser = argparse.ArgumentParser(
     description="Show daily activity on GitHub and (optionally) send it via e-mail.",
-    epilog="Find more information at https://github.com/digitalduke/github-tools"
+    epilog="Find more information at https://digitalduke.github.io/git-tools/"
 )
 parser.add_argument(
     '--date',
