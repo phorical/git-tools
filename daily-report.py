@@ -38,6 +38,12 @@ parser.add_argument(
     help='save GitHub access token into configuration file'
 )
 parser.add_argument(
+    '--remove-token',
+    action='store_true',
+    dest='remove_token',
+    help='remove GitHub access token from configuration file'
+)
+parser.add_argument(
     '--store-repository',
     action='store',
     default=None,
@@ -88,6 +94,11 @@ def run():
         options.update(token=args.token)
         save_options(options)
         print("Token successfully stored in config file.")
+
+    if args.remove_token:
+        options.update(token="")
+        save_options(options)
+        print("Token successfully removed from config file.")
 
     if args.store_repository:
         options.update(repository=args.store_repository)
