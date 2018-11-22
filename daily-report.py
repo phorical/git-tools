@@ -52,6 +52,15 @@ parser.add_argument(
     dest='store_repository',
     help='save repository name into configuration file'
 )
+parser.add_argument(
+    '--remove-repository',
+    action='store',
+    default=None,
+    metavar="REPOSITORY",
+    type=str,
+    dest='remove_repository',
+    help='remove repository name from configuration file'
+)
 
 
 def get_config_path():
@@ -102,6 +111,10 @@ def run():
         options.update(repository=args.store_repository)
         save_options(options)
         print("Repository name successfully stored in config file.")
+    elif args.remove_repository:
+        options.update(repository="")
+        save_options(options)
+        print("Repository name successfully removed from config file.")
     else:
         if args.date == 'today':
             date_since = date.today()
