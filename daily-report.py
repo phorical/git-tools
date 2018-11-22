@@ -15,6 +15,11 @@ parser = argparse.ArgumentParser(
     epilog="Find more information at https://digitalduke.github.io/git-tools/"
 )
 parser.add_argument(
+    '--version',
+    action='version',
+    version='GitHub daily report version 1.0'
+)
+parser.add_argument(
     '--date',
     action='store',
     default='today',
