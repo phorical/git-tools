@@ -34,7 +34,7 @@ parser.add_argument(
     default=None,
     metavar="TOKEN",
     type=str,
-    dest='token',
+    dest='store_token',
     help='save GitHub access token into configuration file'
 )
 parser.add_argument(
@@ -99,8 +99,8 @@ def run():
     args = parser.parse_args()
     options = get_options()
 
-    if args.token:
-        options.update(token=args.token)
+    if args.store_token:
+        options.update(token=args.store_token)
         save_options(options)
         print("Token successfully stored in config file.")
     elif args.remove_token:
