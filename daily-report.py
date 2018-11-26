@@ -61,6 +61,12 @@ parser.add_argument(
     dest='remove_repository',
     help='remove repository name from configuration file'
 )
+parser.add_argument(
+    '--list-repositories',
+    action='store_true',
+    dest='list_repositories',
+    help='list repositories stored in configuration file'
+)
 
 
 def get_config_path():
@@ -127,6 +133,10 @@ def run():
             print("Repository %s successfully removed from config file." % repo)
         else:
             print("Repository %s not in config file." % repo)
+    elif args.list_repositories:
+        repositories = list(options.get('repositories', ''))
+        for repo in repositories:
+            print(repo)
     else:
         if args.date == 'today':
             date_since = date.today()
