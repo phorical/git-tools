@@ -118,9 +118,15 @@ def run():
         else:
             print("Repository %s already in config file." % new_repo)
     elif args.remove_repository:
-        options.update(repository="")
-        save_options(options)
-        print("Repository name successfully removed from config file.")
+        repositories = list(options.get('repositories', ''))
+        repo = args.remove_repository
+        if repo in repositories:
+            repositories.remove(repo)
+            options.update(repositories=repositories)
+            save_options(options)
+            print("Repository %s successfully removed from config file." % repo)
+        else:
+            print("Repository %s not in config file." % repo)
     else:
         if args.date == 'today':
             date_since = date.today()
