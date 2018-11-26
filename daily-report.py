@@ -108,9 +108,15 @@ def run():
         save_options(options)
         print("Token successfully removed from config file.")
     elif args.store_repository:
-        options.update(repository=args.store_repository)
-        save_options(options)
-        print("Repository name successfully stored in config file.")
+        repositories = list(options.get('repositories', ''))
+        new_repo = args.store_repository
+        if new_repo not in repositories:
+            repositories.append(new_repo)
+            options.update(repositories=repositories)
+            save_options(options)
+            print("Repository %s successfully stored in config file." % new_repo)
+        else:
+            print("Repository %s already in config file." % new_repo)
     elif args.remove_repository:
         options.update(repository="")
         save_options(options)
