@@ -61,6 +61,12 @@ parser.add_argument(
     dest='remove_repository',
     help='remove repository name from configuration file'
 )
+parser.add_argument(
+    '--list-repositories',
+    action='store_true',
+    dest='list_repositories',
+    help='list repositories stored in configuration file'
+)
 
 
 def get_config_path():
@@ -108,13 +114,29 @@ def run():
         save_options(options)
         print("Token successfully removed from config file.")
     elif args.store_repository:
-        options.update(repository=args.store_repository)
-        save_options(options)
-        print("Repository name successfully stored in config file.")
+        repositories = list(options.get('repositories', ''))
+        new_repo = args.store_repository
+        if new_repo not in repositories:
+            repositories.append(new_repo)
+            options.update(repositories=repositories)
+            save_options(options)
+            print("Repository %s successfully stored in config file." % new_repo)
+        else:
+            print("Repository %s already in config file." % new_repo)
     elif args.remove_repository:
-        options.update(repository="")
-        save_options(options)
-        print("Repository name successfully removed from config file.")
+        repositories = list(options.get('repositories', ''))
+        repo = args.remove_repository
+        if repo in repositories:
+            repositories.remove(repo)
+            options.update(repositories=repositories)
+            save_options(options)
+            print("Repository %s successfully removed from config file." % repo)
+        else:
+            print("Repository %s not in config file." % repo)
+    elif args.list_repositories:
+        repositories = list(options.get('repositories', ''))
+        for repo in repositories:
+            print(repo)
     else:
         if args.date == 'today':
             date_since = date.today()
@@ -125,54 +147,56 @@ def run():
 
         github = Github(options.get('token', ''))
         user = github.get_user()
+        repositories = list(options.get('repositories', ''))
 
-        try:
-            repo = github.get_repo(options.get('repository', ''))
-        except (Exception, BadCredentialsException) as error:
-            print("Can't get repo %s" % options.get('repository', ''))
+        for repository in repositories:
+            try:
+                repo = github.get_repo(repository)
+            except (Exception, BadCredentialsException) as error:
+                print("Can't get repo %s" % repository)
 
-        try:
-            closed_issues = user.get_issues(state="closed", since=date_since)
-            print("List of daily closed issues")
-            for issue in closed_issues:
-                if date_since <= issue.closed_at <= date_until:
-                    print(issue.number, issue.html_url, issue.title)
-            print()
-        except (Exception, BadCredentialsException) as error:
-            print("Can't get list of closed issues.")
+            try:
+                closed_issues = user.get_issues(state="closed", since=date_since)
+                print("List of daily closed issues")
+                for issue in closed_issues:
+                    if date_since <= issue.closed_at <= date_until:
+                        print(issue.number, issue.html_url, issue.title)
+                print()
+            except (Exception, BadCredentialsException) as error:
+                print("Can't get list of closed issues.")
 
-        try:
-            commits = repo.get_commits(since=date_since, author=user)
-            print("List of daily commits in repo \"%s\" in PR which already closed" % options.get('repository', ''))
-            for commit in commits:
-                print(commit.sha[:7], commit.html_url, commit.commit.message)
-            print()
-        except (Exception, BadCredentialsException) as error:
-            print("Can't get list of commits in PR which already closed.")
-
-        try:
-            pulls = repo.get_pulls(state="open", base="master")
-            if pulls:
-                print("List of daily commits in repo \"%s\" in PR which don't closed" % options.get('repository', ''))
-
-            for pr in pulls:
-                commits = pr.get_commits()
-                print_pr_number = True
-
+            try:
+                commits = repo.get_commits(since=date_since, author=user)
+                print("List of daily commits in repo \"%s\" in PR which already closed" % repository)
                 for commit in commits:
+                    print(commit.sha[:7], commit.html_url, commit.commit.message)
+                print()
+            except (Exception, BadCredentialsException) as error:
+                print("Can't get list of commits in PR which already closed.")
 
-                    if not commit.committer.login == user.login:
-                        continue
+            try:
+                pulls = repo.get_pulls(state="open", base="master")
+                if pulls:
+                    print("List of daily commits in repo \"%s\" in PR which don't closed" % repository)
 
-                    if date_since <= commit.commit.author.date <= date_until:
-                        if print_pr_number:
-                            print("PR#%s %s %s" % (pr.number, pr.html_url, pr.title))
-                            print_pr_number = False
+                for pr in pulls:
+                    commits = pr.get_commits()
+                    print_pr_number = True
 
-                        print(commit.sha[:7], commit.html_url, commit.commit.message)
+                    for commit in commits:
 
-        except (Exception, BadCredentialsException) as error:
-            print("Can't get list of commits in opened PR.")
+                        if not commit.committer.login == user.login:
+                            continue
+
+                        if date_since <= commit.commit.author.date <= date_until:
+                            if print_pr_number:
+                                print("PR#%s %s %s" % (pr.number, pr.html_url, pr.title))
+                                print_pr_number = False
+
+                            print(commit.sha[:7], commit.html_url, commit.commit.message)
+
+            except (Exception, BadCredentialsException) as error:
+                print("Can't get list of commits in opened PR.")
 
         print("\r\nDone.")
 
