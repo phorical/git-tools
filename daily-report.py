@@ -7,76 +7,76 @@ from datetime import date, datetime, timedelta
 from github import Github, BadCredentialsException
 
 
-SCRIPT_FOLDER = 'git-tools'
-CONFIG_FILENAME = 'daily-report.json'
+SCRIPT_FOLDER = "git-tools"
+CONFIG_FILENAME = "daily-report.json"
 
 parser = argparse.ArgumentParser(
     description="Show daily activity on GitHub and (optionally) send it via e-mail.",
     epilog="Find more information at https://digitalduke.github.io/git-tools/"
 )
 parser.add_argument(
-    '--version',
-    action='version',
-    version='GitHub daily report version 1.0'
+    "--version",
+    action="version",
+    version="GitHub daily report version 1.0"
 )
 parser.add_argument(
-    '--date',
-    action='store',
-    default='today',
+    "--date",
+    action="store",
+    default="today",
     metavar="YYYY-MM-DD",
     type=str,
-    dest='date',
-    help='date in ISO 8601 format, for example, 2018-10-16, or today if omitted'
+    dest="date",
+    help="date in ISO 8601 format, for example, 2018-10-16, or today if omitted"
 )
 parser.add_argument(
-    '--store-token',
-    action='store',
+    "--store-token",
+    action="store",
     default=None,
     metavar="TOKEN",
     type=str,
-    dest='store_token',
-    help='save GitHub access token into configuration file'
+    dest="store_token",
+    help="save GitHub access token into configuration file"
 )
 parser.add_argument(
-    '--remove-token',
-    action='store_true',
-    dest='remove_token',
-    help='remove GitHub access token from configuration file'
+    "--remove-token",
+    action="store_true",
+    dest="remove_token",
+    help="remove GitHub access token from configuration file"
 )
 parser.add_argument(
-    '--store-repository',
-    action='store',
+    "--store-repository",
+    action="store",
     default=None,
     metavar="REPOSITORY",
     type=str,
-    dest='store_repository',
-    help='save repository name into configuration file'
+    dest="store_repository",
+    help="save repository name into configuration file"
 )
 parser.add_argument(
-    '--remove-repository',
-    action='store',
+    "--remove-repository",
+    action="store",
     default=None,
     metavar="REPOSITORY",
     type=str,
-    dest='remove_repository',
-    help='remove repository name from configuration file'
+    dest="remove_repository",
+    help="remove repository name from configuration file"
 )
 parser.add_argument(
-    '--list-repositories',
-    action='store_true',
-    dest='list_repositories',
-    help='list repositories stored in configuration file'
+    "--list-repositories",
+    action="store_true",
+    dest="list_repositories",
+    help="list repositories stored in configuration file"
 )
 
 
 def get_config_path():
-    xdg_config_home_dir = os.environ.get('XDG_CONFIG_HOME', '')
-    home_dir = os.environ.get('HOME', '')
+    xdg_config_home_dir = os.environ.get("XDG_CONFIG_HOME", "")
+    home_dir = os.environ.get("HOME", "")
     path = ""
     if xdg_config_home_dir:
         path = os.path.join(xdg_config_home_dir, SCRIPT_FOLDER)
     elif home_dir:
-        path = os.path.join(home_dir, '.config', SCRIPT_FOLDER)
+        path = os.path.join(home_dir, ".config", SCRIPT_FOLDER)
     return path
 
 
@@ -97,7 +97,7 @@ def get_options():
 def save_options(options):
     os.makedirs(get_config_path(), exist_ok=True)
 
-    with open(get_config_file_full_path(), 'w') as config_file:
+    with open(get_config_file_full_path(), "w") as config_file:
         json.dump(options, config_file)
 
 
@@ -114,7 +114,7 @@ def run():
         save_options(options)
         print("Token successfully removed from config file.")
     elif args.store_repository:
-        repositories = list(options.get('repositories', ''))
+        repositories = list(options.get("repositories", ""))
         new_repo = args.store_repository
         if new_repo not in repositories:
             repositories.append(new_repo)
@@ -124,7 +124,7 @@ def run():
         else:
             print("Repository %s already in config file." % new_repo)
     elif args.remove_repository:
-        repositories = list(options.get('repositories', ''))
+        repositories = list(options.get("repositories", ""))
         repo = args.remove_repository
         if repo in repositories:
             repositories.remove(repo)
@@ -134,20 +134,20 @@ def run():
         else:
             print("Repository %s not in config file." % repo)
     elif args.list_repositories:
-        repositories = list(options.get('repositories', ''))
+        repositories = list(options.get("repositories", ""))
         for repo in repositories:
             print(repo)
     else:
-        if args.date == 'today':
+        if args.date == "today":
             date_since = date.today()
         else:
             date_since = parse(args.date)
         date_since = datetime.combine(date_since, datetime.min.time())
         date_until = datetime.combine(date_since.date() + timedelta(days=1), datetime.min.time())
 
-        github = Github(options.get('token', ''))
+        github = Github(options.get("token", ""))
         user = github.get_user()
-        repositories = list(options.get('repositories', ''))
+        repositories = list(options.get("repositories", ""))
 
         for repository in repositories:
             try:
@@ -177,7 +177,7 @@ def run():
             try:
                 pulls = repo.get_pulls(state="open", base="master")
                 if pulls:
-                    print("List of daily commits in repo \"%s\" in PR which don't closed" % repository)
+                    print("List of daily commits in repo \"%s\" in PR which aren't closed" % repository)
 
                 for pr in pulls:
                     commits = pr.get_commits()
