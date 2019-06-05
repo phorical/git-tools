@@ -56,6 +56,18 @@ python3 purge-branches.py --dry-run
 # clear repository from unnecessary branches
 python3 purge-branches.py
 
+# exclude branch from purge
+python3 purge-branches.py --store-exclusion <branch-name>
+
+# remove branch from exclusion list
+python3 purge-branches.py --remove-exclusion <branch-name>
+
+# clear repository from unnecessary branches including those in exclusion list
+python3 purge-branches.py --force
+
+# purge branches with no stdout
+python3 purge-branches [-q|--quiet]
+
 ```
 
 #### Contribute
